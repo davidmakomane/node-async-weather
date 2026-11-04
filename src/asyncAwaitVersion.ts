@@ -4,30 +4,22 @@ import { WeatherData, NewsPost } from "./types";
 const weatherURL = "https://api.open-meteo.com/v1/forecast?latitude=-28.7282&longitude=24.7499&current=temperature_2m,wind_speed_10m,weather_code";
 const newsURL = "https://dummyjson.com/posts";
 
-export function getWeather(
-    callback: (error: Error | null, data?: WeatherData) => void
-): void {
+async function getWeather(): Promise<WeatherData> {
+    const response = await fetch(weatherURL);
 
-    const url = "https://api.open-meteo.com/v1/forecast?latitude=-28.7282&longitude=24.7499&current=temperature_2m,wind_speed_10m,weather_code";
+    if (!response.ok) {
+        throw new Error("Weather request failed");
+    }
 
-    https.get(url, (res) => {
-        let result = "";
+    const data = await response.json();
 
-        res.on("data", chunk => result += chunk);
+    return {
+        temperature: data.current.temperature_2m,
+        windSpeed: data.current.wind_speed_10m,
+        weatherCode: data.current.weather_code
+    };
+}
 
-        res.on("end", () => {
-            try {
-                if (res.statusCode !== 200) {
-                    throw new Error("Weather request failed");
-                }
-
-                const data = JSON.parse(result);
-
-                callback(null, {
-                    temperature: data.current.temperature_2m,
-                    windSpeed: data.current.wind_speed_10m,
-                    weatherCode: data.current.weather_code
-                });
 
             } catch (error) {
                 callback(error as Error);
