@@ -19,12 +19,31 @@ async function getWeather(): Promise<WeatherData> {
         weatherCode: data.current.weather_code
     };
 }
+async function getNews(): Promise<NewsPost[]> {
+    const response = await fetch(newsURL);
 
+    if (!response.ok) {
+        throw new Error("News request failed");
+    }
 
-            } catch (error) {
-                callback(error as Error);
-            }
-        });
+    const data = await response.json();
 
-    }).on("error", callback);
+    return data.posts;
 }
+
+async function startDashboard() {
+    try {
+        const [weather, news] = await Promise.all([
+            getWeather(),
+            getNews()
+        ]);
+
+        console.log("WEATHER:", weather);
+        console.log("NEWS:", news.slice(0, 5));
+
+    } catch (error) {
+        console.log("Error:", error);
+    }
+}
+
+startDashboard();
