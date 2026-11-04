@@ -1,6 +1,8 @@
 
-import https from "node:https";
-import { WeatherData } from "../types";
+import { WeatherData, NewsPost } from "./types";
+
+const weatherURL = "https://api.open-meteo.com/v1/forecast?latitude=-28.7282&longitude=24.7499&current=temperature_2m,wind_speed_10m,weather_code";
+const newsURL = "https://dummyjson.com/posts";
 
 export function getWeather(
     callback: (error: Error | null, data?: WeatherData) => void
